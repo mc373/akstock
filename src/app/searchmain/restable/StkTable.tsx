@@ -62,7 +62,7 @@ export default function StkTable({ cols, tabdata }: tabparam) {
     }
 
     tmptabdata = tabdata;
-  }, [tabdata, cols]);
+  }, [tabdata]);
 
   React.useEffect(() => {
     if (tmpcols != cols) {
