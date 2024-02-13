@@ -72,37 +72,37 @@ export default function StkTable({ cols, tabdata }: tabparam) {
   }, [cols]);
   console.log(columns);
   const table = useReactTable({
-    data,
     columns,
+    data,
     state: {
       sorting,
     },
     // defaultColumn,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    // getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     autoResetPageIndex,
     // Provide our updateData function to our table meta
-    meta: {
-      updateData: (rowIndex, columnId, value) => {
-        // Skip age index reset until after next rerender
-        skipAutoResetPageIndex();
-        setData((old) =>
-          old.map((row, index) => {
-            if (index === rowIndex) {
-              return {
-                ...old[rowIndex]!,
-                [columnId]: value,
-              };
-            }
-            return row;
-          })
-        );
-      },
-    },
-    debugTable: true,
+    // meta: {
+    //   updateData: (rowIndex, columnId, value) => {
+    //     // Skip age index reset until after next rerender
+    //     skipAutoResetPageIndex();
+    //     setData((old) =>
+    //       old.map((row, index) => {
+    //         if (index === rowIndex) {
+    //           return {
+    //             ...old[rowIndex]!,
+    //             [columnId]: value,
+    //           };
+    //         }
+    //         return row;
+    //       })
+    //     );
+    //   },
+    // },
+    // debugTable: true,
   });
 
   return (
