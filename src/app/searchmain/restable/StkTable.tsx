@@ -49,8 +49,8 @@ export default function StkTable({ cols, tabdata }: tabparam) {
       header: () => <span>{row["headerName"]}</span>,
     })
   );
-
-  const [columns, setColumns] = React.useState(col);
+  let inicol: any[] = [];
+  const [columns, setColumns] = React.useState(inicol);
 
   const [data, setData] = React.useState(tabdata);
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -70,6 +70,7 @@ export default function StkTable({ cols, tabdata }: tabparam) {
     }
     tmpcols = cols;
   }, [cols]);
+  console.log(columns);
   const table = useReactTable({
     data,
     columns,

@@ -1,9 +1,11 @@
+"use client";
 import React from "react";
 import { getdata } from "@/apis/getdb";
 import {
   getJsonGrpArr,
   getArrDistinct,
   chkJsonValArr,
+  isNull,
 } from "@/utils/tools/tools";
 import Cookies from "react-cookie";
 import Tabs from "@mui/material/Tabs";
@@ -63,7 +65,6 @@ export type HeadItem = {
 };
 
 export type HeadArr = [HeadItem];
-// const [data, setData] = React.useState();
 const theme = createTheme({
   components: {
     // Name of the component
@@ -87,10 +88,24 @@ const theme = createTheme({
   },
 });
 let orgStkData: any = [];
-let usercols: any[];
-if (typeof window !== "undefined") {
-  usercols = JSON.parse(localStorage.getItem("usercols") || "");
+let usercols: any[] = iniUsercols();
+let t = 0;
+function iniUsercols() {
+  try {
+    const item = localStorage.getItem("usercols");
+
+    // usercols = item;
+    return item ? JSON.parse(item) : "";
+  } catch (error) {
+    const item = [
+      { field: "ts_code", headerName: "股票代码", width: 120 },
+      { field: "stockname", headerName: "股票名称", width: 130 },
+    ];
+    // usercols = item;
+    return item;
+  }
 }
+
 function SetTabsHead(rowdata: any[]) {
   const grpArr = getArrDistinct(rowdata, "colgrpid");
   return grpArr.map((row, Index) => (
@@ -111,16 +126,8 @@ const SearchTabs = () => {
   ]);
 
   const [stkdata, setStkData] = React.useState([]);
-
+  const [columns, setColumns] = React.useState<any[]>(usercols);
   React.useEffect(() => {
-    // let tmp;
-    // if (typeof window !== "undefined") {
-    //   tmp = localStorage.getItem("usercols");
-    // }
-    // let usercols = isNull(tmp) ? [] : JSON.parse(tmp!);
-    // if (usercols.length > 0) {
-    //   setColumns(usercols);
-    // }
     getdata({ type: "sqldata", paraStr1: "stk_sql002" }).then((data) => {
       setData(data);
     });
@@ -129,13 +136,8 @@ const SearchTabs = () => {
       setStkData(data);
     });
   }, []);
-
-  const [columns, setColumns] = React.useState<any[]>([
-    { field: "ts_code", headerName: "股票代码", width: 120 },
-    { field: "stockname", headerName: "股票名称", width: 130 },
-  ]);
-
-  function SetTabsContent(grpid: string) {
+  //tab的标签
+  function SetTabsContent(grpid: string, columns: any[]) {
     const itemArr = getJsonGrpArr(data, "colgrpid", grpid);
 
     let timeoutCt = setTimeout(() => {
@@ -220,6 +222,7 @@ const SearchTabs = () => {
         });
       }
       localStorage.setItem("usercols", JSON.stringify(cols));
+      console.log(cols);
       setColumns(cols);
     };
     function getSearchItem(row: any) {
@@ -262,14 +265,26 @@ const SearchTabs = () => {
         );
       }
     }
-    function ischk(row: any) {
-      if (row["ischecked"] === "Y") {
+    function ischk(row: any, columns: any[]) {
+      if (
+        row["ischecked"] === "Y" ||
+        chkJsonValArr(usercols, "field", row["colid"]).length > 0
+      ) {
         return true;
+      } else {
+        return false;
       }
-      if (chkJsonValArr(usercols, "field", row["colid"]).length > 0) {
-        return true;
-      }
+      // for (let i = 0; i < columns.length; i++) {
+      //   if (row["colid"] === columns[i].field) {
+      //     return true;
+      //   }
+      // }
+      // if (chkJsonValArr(columns, "field", row["colid"]).length > 0) {
+      //   return true;
+      // }
     }
+
+    //tab的项
     return itemArr.map((row, Index) => (
       <Box key={row["colid"]}>
         <ThemeProvider theme={theme}>
@@ -280,7 +295,8 @@ const SearchTabs = () => {
                   id={row["colid"]}
                   sx={{ padding: 0, marginRight: "4px", top: "-1px" }}
                   size="small"
-                  checked={ischk(row)}
+                  defaultChecked={ischk(row, columns)}
+                  // checked={ischk(row, columns)}
                   disabled={row["isenable"] === "Y" ? false : true}
                   inputProps={
                     {
@@ -327,24 +343,12 @@ const SearchTabs = () => {
             sx={{ flexGrow: 1 }}
           >
             <Grid container spacing={1}>
-              {SetTabsContent(row["colgrpid"])}
+              {SetTabsContent(row["colgrpid"], columns)}
             </Grid>
           </Box>
         ))}
       </Box>
       <div style={{ height: 400, width: "100%" }}>
-        {/* <DataGrid
-          rows={stkdata}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
-        /> */}
-
         <StkTable cols={columns} tabdata={stkdata} />
       </div>
     </>
