@@ -349,7 +349,7 @@ const SearchTabs = () => {
         ))}
       </Box>
       <div style={{ height: 400, width: "100%" }}>
-        <StkTable cols={columns} tabdata={stkdata} />
+        {/* <StkTable cols={columns} tabdata={stkdata} /> */}
       </div>
     </>
   );
