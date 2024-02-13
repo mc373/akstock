@@ -4,7 +4,6 @@ import "./StkTable.css";
 import {
   useReactTable,
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   flexRender,
   RowData,
@@ -70,7 +69,7 @@ export default function StkTable({ cols, tabdata }: tabparam) {
     }
     tmpcols = cols;
   }, [cols]);
-  console.log(columns);
+
   const table = useReactTable({
     columns,
     data,

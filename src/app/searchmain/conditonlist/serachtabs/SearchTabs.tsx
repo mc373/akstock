@@ -93,14 +93,25 @@ let t = 0;
 function iniUsercols() {
   try {
     const item = localStorage.getItem("usercols");
+    let ret = [];
+    if (item) {
+      ret = JSON.parse(item);
+      if (chkJsonValArr(ret, "field", "ts_code").length <= 0) {
+        ret.push({ field: "ts_code", headerName: "股票代码", width: 120 });
+      }
+      if (chkJsonValArr(ret, "field", "stockname").length <= 0) {
+        ret.push({ field: "stockname", headerName: "股票名称", width: 120 });
+      }
+    }
 
     // usercols = item;
-    return item ? JSON.parse(item) : "";
+    return item ? ret : "";
   } catch (error) {
     const item = [
       { field: "ts_code", headerName: "股票代码", width: 120 },
       { field: "stockname", headerName: "股票名称", width: 130 },
     ];
+
     // usercols = item;
     return item;
   }
@@ -222,7 +233,7 @@ const SearchTabs = () => {
         });
       }
       localStorage.setItem("usercols", JSON.stringify(cols));
-      console.log(cols);
+
       setColumns(cols);
     };
     function getSearchItem(row: any) {
